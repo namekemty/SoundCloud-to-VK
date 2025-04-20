@@ -14,13 +14,13 @@ function addUploadButtons() {
     if (!actionsContainer) return;
     
     // Находим кнопку "More"
-    const copyLinkButton = Array.from(actionsContainer.querySelectorAll('button')).find(btn => 
+    const moreButton = Array.from(actionsContainer.querySelectorAll('button')).find(btn => 
       btn.getAttribute('aria-label') === 'More' || 
       btn.getAttribute('title') === 'More' ||
       btn.getAttribute('data-title') === 'More'
     );
     
-    if (!copyLinkButton) return;
+    if (!moreButton) return;
     
     // Создаем кнопку загрузки
     const uploadButton = document.createElement('button');
@@ -70,11 +70,11 @@ function addUploadButtons() {
     });
     
     // Добавляем кнопку после кнопки "More"
-    copyLinkButton.insertAdjacentElement('afterend', uploadButton);
+    moreButton.insertAdjacentElement('afterend', uploadButton);
     
     // Чтобы быть уверенными, что кнопка добавлена в общий контейнер, также добавим класс родительского элемента
-    if (copyLinkButton.parentElement) {
-      uploadButton.classList.add(copyLinkButton.parentElement.className);
+    if (moreButton.parentElement) {
+      uploadButton.classList.add(moreButton.parentElement.className);
     }
   });
 }
