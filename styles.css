@@ -1,0 +1,134 @@
+/* Стили для расширения SoundCloud to VK Uploader */
+
+/* Кнопка загрузки во ВКонтакте */
+.sc-to-vk-button {
+  background-color: transparent;
+  color: #333;
+  border: 1px solid #e5e5e5;
+  border-radius: 3px;
+  padding: 2px 8px;
+  margin-left: 5px;
+  cursor: pointer;
+  font-size: 12px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+  position: relative;
+  outline: none;
+  height: 22px;
+  width: 22px;
+  min-width: 22px;
+}
+
+/* Размер и отступы SVG */
+.sc-to-vk-button svg {
+  width: 14px;
+  height: 14px;
+}
+
+/* Поддержка темной темы SoundCloud */
+@media (prefers-color-scheme: dark) {
+  .sc-to-vk-button {
+    color: #f2f2f2;
+    border-color: #333;
+    background-color: transparent;
+  }
+}
+
+.sc-to-vk-button:hover {
+  background-color: rgba(0, 0, 0, 0.05);
+  border-color: #ccc;
+}
+
+/* Поддержка hover-эффекта для темной темы */
+@media (prefers-color-scheme: dark) {
+  .sc-to-vk-button:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+    border-color: #555;
+  }
+}
+
+.sc-to-vk-button:active {
+  background-color: rgba(0, 0, 0, 0.1);
+}
+
+@media (prefers-color-scheme: dark) {
+  .sc-to-vk-button:active {
+    background-color: rgba(255, 255, 255, 0.15);
+  }
+}
+
+/* Анимация загрузки */
+.sc-to-vk-button.loading {
+  pointer-events: none;
+  opacity: 0.7;
+}
+
+.sc-to-vk-button.loading svg {
+  display: none;
+}
+
+.sc-to-vk-button.loading::after {
+  content: '';
+  position: absolute;
+  width: 14px;
+  height: 14px;
+  border: 2px solid rgba(128, 128, 128, 0.3);
+  border-top-color: currentColor;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@media (prefers-color-scheme: dark) {
+  .sc-to-vk-button.loading::after {
+    border: 2px solid rgba(255, 255, 255, 0.2);
+    border-top-color: currentColor;
+  }
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+/* Уведомления */
+.sc-to-vk-notification {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  padding: 12px 16px;
+  border-radius: 4px;
+  color: white;
+  font-size: 14px;
+  z-index: 9999;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+  animation: slide-in 0.3s ease-out;
+  max-width: 300px;
+  word-wrap: break-word;
+}
+
+.sc-to-vk-notification.success {
+  background-color: #4CAF50;
+}
+
+.sc-to-vk-notification.error {
+  background-color: #F44336;
+}
+
+.sc-to-vk-notification.info {
+  background-color: #2196F3;
+}
+
+.sc-to-vk-notification.fade-out {
+  animation: fade-out 0.5s ease-out forwards;
+}
+
+@keyframes slide-in {
+  from { transform: translateY(20px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+
+@keyframes fade-out {
+  from { opacity: 1; }
+  to { opacity: 0; }
+}

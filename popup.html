@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SoundCloud to VK Uploader</title>
+  <style>
+    :root {
+      --background: hsl(240 10% 3.9%);
+      --foreground: hsl(0 0% 98%);
+      --card: hsl(240 10% 3.9%);
+      --card-foreground: hsl(0 0% 98%);
+      --popover: hsl(240 10% 3.9%);
+      --popover-foreground: hsl(0 0% 98%);
+      --primary: hsl(240 5.9% 10%);
+      --primary-foreground: hsl(0 0% 98%);
+      --secondary: hsl(240 3.7% 15.9%);
+      --secondary-foreground: hsl(0 0% 98%);
+      --muted: hsl(240 3.7% 15.9%);
+      --muted-foreground: hsl(240 5% 64.9%);
+      --accent: hsl(240 3.7% 15.9%);
+      --accent-foreground: hsl(0 0% 98%);
+      --destructive: hsl(0 62.8% 30.6%);
+      --destructive-foreground: hsl(0 0% 98%);
+      --border: hsl(240 3.7% 15.9%);
+      --input: hsl(240 3.7% 15.9%);
+      --ring: hsl(240 4.9% 83.9%);
+      --radius: 0.5rem;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+      width: 350px;
+      background-color: var(--background);
+      color: var(--foreground);
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+    
+    .container {
+      padding: 1.25rem;
+    }
+    
+    .header {
+      display: flex;
+      align-items: center;
+      margin-bottom: 1.25rem;
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 1rem;
+    }
+    
+    .header h1 {
+      font-size: 1.25rem;
+      font-weight: 600;
+      margin: 0;
+      color: var(--foreground);
+      letter-spacing: -0.025em;
+    }
+    
+    .logo {
+      width: 2rem;
+      height: 2rem;
+      margin-right: 0.75rem;
+      border-radius: var(--radius);
+    }
+    
+    .card {
+      background-color: var(--card);
+      border-radius: var(--radius);
+      border: 1px solid var(--border);
+      padding: 1.25rem;
+      margin-bottom: 1rem;
+      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+      transition: all 0.2s ease;
+    }
+    
+    .card.logged-in {
+      border-left: 3px solid hsl(142.1, 76.2%, 36.3%);
+    }
+    
+    .card.logged-out {
+      border-left: 3px solid hsl(0, 84.2%, 60.2%);
+    }
+    
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 500;
+      border-radius: var(--radius);
+      font-size: 0.875rem;
+      height: 2.5rem;
+      padding-left: 1rem;
+      padding-right: 1rem;
+      cursor: pointer;
+      transition: all 0.15s ease;
+      width: 100%;
+      margin-bottom: 0.5rem;
+      border: none;
+      position: relative;
+      overflow: hidden;
+    }
+    
+    .btn:after {
+      content: '';
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      top: 0;
+      left: 0;
+      pointer-events: none;
+      background-image: radial-gradient(circle, #fff 10%, transparent 10.01%);
+      background-repeat: no-repeat;
+      background-position: 50%;
+      transform: scale(10, 10);
+      opacity: 0;
+      transition: transform .3s, opacity .5s;
+    }
+    
+    .btn:active:after {
+      transform: scale(0, 0);
+      opacity: .2;
+      transition: 0s;
+    }
+    
+    .btn-primary {
+      background-color: var(--primary);
+      color: var(--primary-foreground);
+      box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+    }
+    
+    .btn-primary:hover {
+      background-color: hsl(240 5.2% 33.9%);
+    }
+    
+    .btn-secondary {
+      background-color: var(--secondary);
+      color: var(--secondary-foreground);
+    }
+    
+    .btn-secondary:hover {
+      background-color: hsl(240 5.5% 26.0%);
+    }
+    
+    .info {
+      color: var(--muted-foreground);
+      font-size: 0.875rem;
+      line-height: 1.5;
+      margin-top: 1rem;
+    }
+    
+    .spinner {
+      display: inline-block;
+      width: 1rem;
+      height: 1rem;
+      vertical-align: text-bottom;
+      border: 0.2em solid currentColor;
+      border-right-color: transparent;
+      border-radius: 50%;
+      animation: spinner-border .75s linear infinite;
+      margin-right: 0.5rem;
+      opacity: 0.7;
+    }
+    
+    @keyframes spinner-border {
+      to { transform: rotate(360deg); }
+    }
+    
+    .hidden {
+      display: none;
+    }
+    
+    .icon {
+      margin-right: 0.5rem;
+      width: 1rem;
+      height: 1rem;
+    }
+    
+    .alert-icon {
+      color: hsl(0, 84.2%, 60.2%);
+    }
+    
+    .check-icon {
+      color: hsl(142.1, 76.2%, 36.3%);
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <img src="icons/icon48.png" alt="Logo" class="logo">
+      <h1>SoundCloud to VK</h1>
+    </div>
+    
+    <div id="statusContainer" class="card">
+      <div id="loadingStatus">
+        <span class="spinner"></span> Проверка статуса авторизации...
+      </div>
+      
+      <div id="loggedInStatus" class="hidden">
+        <svg class="icon check-icon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M20 6L9 17l-5-5"/>
+        </svg>
+        Вы авторизованы во ВКонтакте
+      </div>
+      
+      <div id="loggedOutStatus" class="hidden">
+        <svg class="icon alert-icon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/>
+          <line x1="12" y1="9" x2="12" y2="13"/>
+          <line x1="12" y1="17" x2="12.01" y2="17"/>
+        </svg>
+        Требуется авторизация во ВКонтакте
+      </div>
+    </div>
+    
+    <div id="authButtons" class="hidden">
+      <button id="loginButton" class="btn btn-primary">
+        <svg class="icon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/>
+          <polyline points="10 17 15 12 10 7"/>
+          <line x1="15" y1="12" x2="3" y2="12"/>
+        </svg>
+        Авторизоваться во ВКонтакте
+      </button>
+    </div>
+    
+    <div id="userButtons" class="hidden">
+      <button id="logoutButton" class="btn btn-secondary">
+        <svg class="icon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
+          <polyline points="16 17 21 12 16 7"/>
+          <line x1="21" y1="12" x2="9" y2="12"/>
+        </svg>
+        Выйти
+      </button>
+    </div>
+    
+    <div class="info">
+      <p>Для загрузки трека из SoundCloud во ВКонтакте нажмите на кнопку VK рядом с треком.</p>
+    </div>
+  </div>
+  
+  <script src="popup.js"></script>
+</body>
+</html>

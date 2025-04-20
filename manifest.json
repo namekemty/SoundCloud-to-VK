@@ -1,0 +1,41 @@
+{
+  "manifest_version": 3,
+  "name": "SoundCloud to VK Uploader",
+  "version": "1.0",
+  "description": "Загружает музыку из SoundCloud во ВКонтакте",
+  "permissions": [
+    "activeTab",
+    "storage",
+    "cookies",
+    "webRequest",
+    "downloads"
+  ],
+  "host_permissions": [
+    "*://*.soundcloud.com/*",
+    "*://*.vk.com/*"
+  ],
+  "action": {
+    "default_popup": "popup.html",
+    "default_icon": {
+      "16": "icons/icon16.png",
+      "48": "icons/icon48.png",
+      "128": "icons/icon128.png"
+    }
+  },
+  "content_scripts": [
+    {
+      "matches": ["*://*.soundcloud.com/*"],
+      "js": ["content.js"],
+      "css": ["styles.css"]
+    }
+  ],
+  "background": {
+    "service_worker": "background.js"
+  },
+  "web_accessible_resources": [
+    {
+      "resources": ["icons/*"],
+      "matches": ["*://*.soundcloud.com/*"]
+    }
+  ]
+}
