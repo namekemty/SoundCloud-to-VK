@@ -2,60 +2,78 @@
 
 /* Кнопка загрузки во ВКонтакте */
 .sc-to-vk-button {
-  background-color: transparent;
+  background-color: #f3f3f3;
   color: #333;
-  border: 1px solid #e5e5e5;
+  border: none;
   border-radius: 3px;
-  padding: 2px 8px;
-  margin-left: 5px;
+  padding: 0;
   cursor: pointer;
   font-size: 12px;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  transition: all 0.2s ease;
+  transition: all 0.15s ease;
   position: relative;
   outline: none;
-  height: 22px;
-  width: 22px;
-  min-width: 22px;
+  height: 32px;
+  width: 32px;
+  min-width: 32px;
+  overflow: hidden;
+  vertical-align: middle;
 }
 
-/* Размер и отступы SVG */
-.sc-to-vk-button svg {
-  width: 14px;
-  height: 14px;
+/* Размер и отступы изображения */
+.sc-to-vk-button img {
+  width: 20.4px;
+  height: 20.4px;
+  display: block;
+  object-fit: contain;
+  margin: 0 auto;
+}
+
+/* Размер и отступы SVG иконки VK */
+.sc-to-vk-button .vk-icon {
+  width: 16px;
+  height: 16px;
+  display: block;
+  fill: #333; /* Цвет для светлой темы */
+  transition: fill 0.05s ease;
 }
 
 /* Поддержка темной темы SoundCloud */
 @media (prefers-color-scheme: dark) {
   .sc-to-vk-button {
     color: #f2f2f2;
-    border-color: #333;
-    background-color: transparent;
+    background-color: #303030;
+  }
+  
+  .sc-to-vk-button img {
+    filter: brightness(0) invert(1); /* Делаем логотип белым для темной темы */
+  }
+  
+  .sc-to-vk-button .vk-icon {
+    fill: #ffffff; /* Белый цвет для темной темы */
   }
 }
 
-.sc-to-vk-button:hover {
-  background-color: rgba(0, 0, 0, 0.05);
-  border-color: #ccc;
+.sc-to-vk-button:hover .vk-icon {
+  fill: rgba(18, 18, 18, 0.4);
 }
 
 /* Поддержка hover-эффекта для темной темы */
 @media (prefers-color-scheme: dark) {
-  .sc-to-vk-button:hover {
-    background-color: rgba(255, 255, 255, 0.1);
-    border-color: #555;
+  .sc-to-vk-button:hover .vk-icon {
+    fill: rgba(255, 255, 255, 0.4);
   }
 }
 
-.sc-to-vk-button:active {
-  background-color: rgba(0, 0, 0, 0.1);
+.sc-to-vk-button:active .vk-icon {
+  fill: rgba(18, 18, 18, 0.6);
 }
 
 @media (prefers-color-scheme: dark) {
-  .sc-to-vk-button:active {
-    background-color: rgba(255, 255, 255, 0.15);
+  .sc-to-vk-button:active .vk-icon {
+    fill: rgba(255, 255, 255, 0.6);
   }
 }
 
@@ -65,7 +83,11 @@
   opacity: 0.7;
 }
 
-.sc-to-vk-button.loading svg {
+.sc-to-vk-button.loading img {
+  display: none;
+}
+
+.sc-to-vk-button.loading .vk-icon {
   display: none;
 }
 

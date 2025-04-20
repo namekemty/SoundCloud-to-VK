@@ -9,18 +9,28 @@ function addUploadButtons() {
     // Проверяем, не добавлена ли уже кнопка
     if (trackElement.querySelector('.sc-to-vk-button')) return;
     
-    // Находим контейнер с кнопками действий для трека
-    const actionsContainer = trackElement.querySelector('.soundActions, .trackItem__actions');
+    // Находим контейнер с кнопками действий
+    const actionsContainer = trackElement.querySelector('.soundActions.sc-button-toolbar');
     if (!actionsContainer) return;
+    
+    // Находим кнопку "More"
+    const copyLinkButton = Array.from(actionsContainer.querySelectorAll('button')).find(btn => 
+      btn.getAttribute('aria-label') === 'More' || 
+      btn.getAttribute('title') === 'More' ||
+      btn.getAttribute('data-title') === 'More'
+    );
+    
+    if (!copyLinkButton) return;
     
     // Создаем кнопку загрузки
     const uploadButton = document.createElement('button');
     uploadButton.className = 'sc-to-vk-button';
     uploadButton.title = 'Загрузить во ВКонтакте';
-    uploadButton.innerHTML = `
-      <svg width="16" height="16" viewBox="0 0 32 32" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
-        <path d="M25.4,18.1c1-1.1,2-2.2,2.9-3.4c0.4-0.5,0.8-1.1,1.1-1.7c0.4-0.8,0-1.8-0.9-1.9l-5.5,0c-0.5,0-1,0.2-1.4,0.6 c-0.3,0.3-0.6,0.7-0.8,1.1c-0.7,1.1-1.5,2.2-2.3,3.1c-0.4,0.4-0.8,0.8-1.3,1.1c-0.5,0.3-0.9,0.2-1.2-0.3c-0.3-0.5-0.3-1.1-0.4-1.8 c0-0.9,0-1.8,0-2.8c0-0.6-0.1-0.9-0.7-1.1c-1-0.4-2.1-0.5-3.1-0.5C9.8,10.6,8.6,10.8,7.5,11.6c-0.5,0.4-0.7,0.7-0.4,1.3 c0.3,0.5,0.9,0.6,1.5,0.7c0.4,0,0.7,0.2,0.9,0.6c0.3,0.6,0.3,1.2,0.3,1.9c0,0.8-0.1,1.5-0.2,2.3c-0.1,0.5-0.2,1-0.6,1.3 c-0.5,0.4-1-0.1-1.4-0.4c-1.2-1.1-2-2.4-2.8-3.7c-0.4-0.6-0.7-1.3-1-2c-0.2-0.5-0.6-0.8-1.1-0.8c-1,0-2.1,0-3.1,0 c-0.7,0-1,0.3-0.7,1c1.1,2.4,2.3,4.6,4,6.6c1.4,1.7,2.9,3.1,4.9,4c1.8,0.8,3.7,1.1,5.7,1c0.9,0,1.2-0.3,1.2-1.2 c0-0.8,0.1-1.7,0.5-2.4c0.3-0.6,0.8-0.7,1.4-0.3c0.3,0.2,0.5,0.4,0.7,0.7c0.6,0.7,1.3,1.4,2,2c0.8,0.7,1.7,1,2.8,0.9h5 c0.6,0,0.9-0.8,0.5-1.5c-0.3-0.6-0.8-1.1-1.3-1.5C26.9,19.7,26.1,18.9,25.4,18.1z"/>
-      </svg>`;
+    
+    // Используем SVG с белым логотипом VK
+    uploadButton.innerHTML = `<svg class="vk-icon" version="1.1" viewBox="0 0 64 64" xml:space="preserve" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+      <path d="M4,13.9c2.1,0,5.3,0,7.1,0c0.9,0,1.6,0.6,1.9,1.4c0.9,2.6,2.9,8.3,5.2,12.2c3.1,5.1,5.1,7,6.4,6.8   c1.3-0.3,0.9-3.7,0.9-6.4s0.3-7.3-1-9.4l-2-2.9c-0.5-0.7,0-1.6,0.8-1.6h11.4c1.1,0,2,0.9,2,2v14.5c0,0,0.5,2.6,3.3-0.1   c2.8-2.7,5.8-7.7,8.3-12.8l1-2.4c0.3-0.7,1-1.2,1.8-1.2h7.4c1.4,0,2.4,1.4,1.9,2.7l-0.8,2.1c0,0-2.7,5.4-5.5,9.2   c-2.8,3.9-3.4,4.8-3,5.8c0.4,1,7.6,7.7,9.4,10.9c0.5,0.9,0.9,1.7,1.3,2.4c0.7,1.3-0.3,3-1.8,3l-8.4,0c-0.7,0-1.4-0.4-1.7-1   l-0.8-1.3c0,0-5.1-6-8.2-7.9c-3.2-1.8-3.1,0.8-3.1,0.8v5.3c0,2.2-1.8,4-4,4h-2c0,0-11,0-19.8-13.1C5.1,26.7,2.8,20.1,2,16.3   C1.8,15.1,2.7,13.9,4,13.9z"/>
+    </svg>`;
     
     // Добавляем обработчик клика
     uploadButton.addEventListener('click', function(event) {
@@ -59,8 +69,13 @@ function addUploadButtons() {
       }, 5000);
     });
     
-    // Добавляем кнопку в контейнер
-    actionsContainer.appendChild(uploadButton);
+    // Добавляем кнопку после кнопки "More"
+    copyLinkButton.insertAdjacentElement('afterend', uploadButton);
+    
+    // Чтобы быть уверенными, что кнопка добавлена в общий контейнер, также добавим класс родительского элемента
+    if (copyLinkButton.parentElement) {
+      uploadButton.classList.add(copyLinkButton.parentElement.className);
+    }
   });
 }
 
