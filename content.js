@@ -7,17 +7,34 @@ const VK_ICON_SVG = `<svg class="vk-icon" version="1.1" viewBox="0 0 64 64" xml:
 
 // Функция для создания кнопки VK
 function createVkButton() {
+  // Создаем контейнер-обертку для кнопки
+  const buttonWrapper = document.createElement("div");
+  buttonWrapper.className = "sc-to-vk-button-wrapper";
+
+  // Создаем саму кнопку
   const uploadButton = document.createElement("button");
   uploadButton.className = "sc-to-vk-button";
   uploadButton.innerHTML = VK_ICON_SVG;
-  uploadButton.title = "Загрузить во ВКонтакте";
-  return uploadButton;
+  uploadButton.title = "Upload to VK";
+
+  // Добавляем кнопку в контейнер
+  buttonWrapper.appendChild(uploadButton);
+
+  // Предотвращаем возможные события, которые могут привести к смещению
+  buttonWrapper.addEventListener("click", (e) => e.stopPropagation());
+
+  return { wrapper: buttonWrapper, button: uploadButton };
 }
 
 // Функция для обработки нажатия на кнопку и загрузки трека
 function handleVkButtonClick(event, button, trackInfo) {
-  event.preventDefault();
-  event.stopPropagation();
+  if (event) {
+    event.preventDefault();
+    event.stopPropagation();
+  }
+
+  // Показываем индикатор загрузки
+  button.classList.add("loading");
 
   // Отправляем сообщение в background script для загрузки
   chrome.runtime.sendMessage(
@@ -26,20 +43,27 @@ function handleVkButtonClick(event, button, trackInfo) {
       trackInfo: trackInfo,
     },
     (response) => {
+      // Скрываем индикатор загрузки
+      button.classList.remove("loading");
+
       if (response && response.success) {
         showNotification("Трек успешно загружен во ВКонтакте", "success");
       } else {
-        showNotification("Ошибка при загрузке трека", "error");
+        showNotification(
+          response?.error || "Ошибка при загрузке трека",
+          "error"
+        );
       }
     }
   );
 
-  // Показываем индикатор загрузки
-  button.classList.add("loading");
-
+  // Страховка: если ответ не придет, скрываем индикатор через 10 секунд
   setTimeout(() => {
-    button.classList.remove("loading");
-  }, 5000);
+    if (button.classList.contains("loading")) {
+      button.classList.remove("loading");
+      showNotification("Превышено время ожидания ответа от сервера", "error");
+    }
+  }, 10000);
 }
 
 // Функция для добавления кнопки загрузки рядом с треками
@@ -51,7 +75,7 @@ function addUploadButtons() {
 
   trackElements.forEach((trackElement) => {
     // Проверяем, не добавлена ли уже кнопка
-    if (trackElement.querySelector(".sc-to-vk-button")) return;
+    if (trackElement.querySelector(".sc-to-vk-button-wrapper")) return;
 
     // Находим контейнер с кнопками действий
     const actionsContainer = trackElement.querySelector(
@@ -71,11 +95,11 @@ function addUploadButtons() {
 
     if (!moreButton) return;
 
-    // Создаем кнопку загрузки
-    const uploadButton = createVkButton();
+    // Создаем кнопку загрузки и ее обертку
+    const { wrapper, button } = createVkButton();
 
     // Добавляем обработчик клика
-    uploadButton.addEventListener("click", function (event) {
+    button.addEventListener("click", function (event) {
       // Получаем информацию о треке
       const trackTitle = trackElement
         .querySelector(".soundTitle__title, .trackItem__trackTitle")
@@ -94,7 +118,7 @@ function addUploadButtons() {
       const trackUrl = trackLink ? trackLink.href : window.location.href;
 
       // Обрабатываем клик
-      handleVkButtonClick(event, uploadButton, {
+      handleVkButtonClick(event, button, {
         title: trackTitle,
         artist: artistName,
         url: trackUrl,
@@ -102,11 +126,11 @@ function addUploadButtons() {
     });
 
     // Добавляем кнопку после кнопки "More"
-    moreButton.insertAdjacentElement("afterend", uploadButton);
+    moreButton.insertAdjacentElement("afterend", wrapper);
 
     // Чтобы быть уверенными, что кнопка добавлена в общий контейнер, также добавим класс родительского элемента
     if (moreButton.parentElement) {
-      uploadButton.classList.add(moreButton.parentElement.className);
+      wrapper.classList.add(moreButton.parentElement.className);
     }
   });
 }
@@ -117,7 +141,7 @@ function addTrackPageButtonGroup() {
   if (!isTrackPage()) return;
 
   // Проверяем, не добавлена ли уже кнопка в группу кнопок
-  if (document.querySelector(".sc-to-vk-button")) return;
+  if (document.querySelector(".sc-to-vk-button-wrapper")) return;
 
   // Находим группу кнопок на странице трека
   const buttonGroup = document.querySelector(
@@ -125,11 +149,11 @@ function addTrackPageButtonGroup() {
   );
   if (!buttonGroup) return;
 
-  // Создаем кнопку загрузки
-  const uploadButton = createVkButton();
+  // Создаем кнопку загрузки и ее обертку
+  const { wrapper, button } = createVkButton();
 
   // Добавляем обработчик клика
-  uploadButton.addEventListener("click", function (event) {
+  button.addEventListener("click", function (event) {
     // Получаем информацию о треке с учетом разных форматов страницы
     const trackTitle =
       document.querySelector(".soundTitle__title")?.textContent.trim() ||
@@ -151,7 +175,7 @@ function addTrackPageButtonGroup() {
     const trackUrl = window.location.href;
 
     // Обрабатываем клик
-    handleVkButtonClick(event, uploadButton, {
+    handleVkButtonClick(event, button, {
       title: trackTitle,
       artist: artistName,
       url: trackUrl,
@@ -159,7 +183,7 @@ function addTrackPageButtonGroup() {
   });
 
   // Добавляем кнопку в группу кнопок
-  buttonGroup.appendChild(uploadButton);
+  buttonGroup.appendChild(wrapper);
 }
 
 // Функция для определения, находимся ли мы на странице трека
@@ -207,7 +231,7 @@ addUploadButtons();
 addTrackPageButtonGroup(); // Добавляем функцию для группы кнопок
 
 // Наблюдатель за изменениями DOM для динамически загружаемого контента
-const observer = new MutationObserver((mutations) => {
+const observer = new MutationObserver(() => {
   // Проверяем, есть ли новые треки, и добавляем к ним кнопки
   addUploadButtons();
   addTrackPageButtonGroup(); // Вызываем также и для группы кнопок
