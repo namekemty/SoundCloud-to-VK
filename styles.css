@@ -28,7 +28,7 @@
   height: 16px;
   display: block;
   fill: #333; /* Цвет для светлой темы */
-  transition: fill 0.05s ease;
+  transition: fill 0.1s ease;
 }
 
 /* Поддержка темной темы SoundCloud */
