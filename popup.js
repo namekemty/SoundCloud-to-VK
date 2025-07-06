@@ -30,6 +30,9 @@ async function checkAuthStatus() {
         // Токен действителен
         showLoggedInState();
         return;
+      } else {
+        // Токен истек, удаляем его
+        await chrome.storage.local.remove(['vk_token', 'vk_user_id', 'vk_expires_at']);
       }
     }
     
@@ -89,47 +92,49 @@ function showLoggedOutState(message) {
 async function authorizeVK() {
   const authUrl = `https://oauth.vk.com/authorize?client_id=${VK_CLIENT_ID}&display=popup&redirect_uri=${encodeURIComponent(VK_REDIRECT_URI)}&scope=${VK_SCOPE}&response_type=token&v=${VK_API_VERSION}`;
   
-  // Открываем окно авторизации
-  chrome.tabs.create({ url: authUrl }, (tab) => {
-    // Слушаем изменения URL в открытой вкладке
+  try {
+    // Очищаем предыдущий результат авторизации
+    await chrome.storage.local.remove(['auth_success']);
+    
+    // Открываем окно авторизации
+    const tab = await chrome.tabs.create({ url: authUrl });
     const tabId = tab.id;
     
-    function listener(tabId, changeInfo) {
-      // Проверяем, содержит ли URL токен доступа
-      if (changeInfo.url && changeInfo.url.includes('access_token=')) {
-        // Извлекаем токен и другие параметры из URL
-        const url = new URL(changeInfo.url);
-        const hashParams = new URLSearchParams(url.hash.substring(1));
+    // Слушатель сообщений из oauth.js
+    const authResultListener = (message, sender, sendResponse) => {
+      if (message.action === 'authComplete') {
+        // Удаляем слушатель после успешной авторизации
+        chrome.runtime.onMessage.removeListener(authResultListener);
         
-        const accessToken = hashParams.get('access_token');
-        const userId = hashParams.get('user_id');
-        const expiresIn = hashParams.get('expires_in');
-        
-        if (accessToken && userId) {
-          // Сохраняем токен и информацию о пользователе
-          const expiresAt = Date.now() + parseInt(expiresIn) * 1000;
-          
-          chrome.storage.local.set({
-            vk_token: accessToken,
-            vk_user_id: userId,
-            vk_expires_at: expiresAt
-          });
-          
-          // Закрываем вкладку авторизации
-          chrome.tabs.remove(tabId);
-          
-          // Обновляем интерфейс
+        if (message.success) {
           showLoggedInState();
+        } else {
+          showLoggedOutState('Ошибка авторизации: ' + (message.error || 'Неизвестная ошибка'));
         }
         
-        // Удаляем слушатель
-        chrome.tabs.onUpdated.removeListener(listener);
+        // Закрываем вкладку
+        chrome.tabs.remove(tabId).catch(() => {});
       }
-    }
+    };
     
-    // Добавляем слушатель изменений URL
-    chrome.tabs.onUpdated.addListener(listener);
-  });
+    // Регистрируем слушатель
+    chrome.runtime.onMessage.addListener(authResultListener);
+    
+    // Слушатель закрытия вкладки авторизации
+    const handleTabRemove = (removedTabId) => {
+      if (removedTabId === tabId) {
+        // Удаляем все слушатели
+        chrome.runtime.onMessage.removeListener(authResultListener);
+        chrome.tabs.onRemoved.removeListener(handleTabRemove);
+      }
+    };
+    
+    // Регистрируем слушатель
+    chrome.tabs.onRemoved.addListener(handleTabRemove);
+  } catch (error) {
+    console.error('Ошибка при авторизации:', error);
+    showLoggedOutState('Ошибка при открытии страницы авторизации');
+  }
 }
 
 // Выход из аккаунта

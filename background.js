@@ -14,6 +14,9 @@ async function checkVKAuth() {
       
       if (result.response && result.response.length > 0) {
         return { authorized: true, token: data.vk_token, userId: data.vk_user_id };
+      } else {
+        // Удаляем недействительный токен
+        await chrome.storage.local.remove(['vk_token', 'vk_user_id', 'vk_expires_at']);
       }
     }
     

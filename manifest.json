@@ -8,11 +8,13 @@
     "storage",
     "cookies",
     "webRequest",
-    "downloads"
+    "downloads",
+    "tabs"
   ],
   "host_permissions": [
     "*://*.soundcloud.com/*",
-    "*://*.vk.com/*"
+    "*://*.vk.com/*",
+    "*://*.oauth.vk.com/*"
   ],
   "action": {
     "default_popup": "popup.html",
@@ -27,6 +29,10 @@
       "matches": ["*://*.soundcloud.com/*"],
       "js": ["content.js"],
       "css": ["styles.css"]
+    },
+    {
+      "matches": ["*://oauth.vk.com/blank.html*"],
+      "js": ["oauth.js"]
     }
   ],
   "background": {
