@@ -9,8 +9,32 @@
   position: relative;
 }
 
+/* Обертка для кнопки скачивания обложки */
+.sc-cover-download-button-wrapper {
+  display: inline-block;
+  vertical-align: middle;
+  height: 32px;
+  width: 32px;
+  position: relative;
+}
+
 /* Кнопка загрузки во ВКонтакте */
 .sc-to-vk-button {
+  background-color: #f3f3f3;
+  color: #333;
+  border: none;
+  border-radius: 3px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: absolute;
+  width: 100%;
+  height: 100%;
+}
+
+/* Кнопка скачивания обложки */
+.sc-cover-download-button {
   background-color: #f3f3f3;
   color: #333;
   border: none;
@@ -32,6 +56,14 @@
   transition: fill 0.1s ease, opacity 0.2s ease;
 }
 
+/* Размер и отступы SVG иконки обложки */
+.sc-cover-download-button .cover-icon {
+  width: 16px;
+  height: 16px;
+  fill: #333;
+  transition: fill 0.1s ease, opacity 0.2s ease;
+}
+
 /* Поддержка темной темы SoundCloud */
 @media (prefers-color-scheme: dark) {
   .sc-to-vk-button {
@@ -42,9 +74,22 @@
   .sc-to-vk-button .vk-icon {
     fill: #ffffff; /* Белый цвет для темной темы */
   }
+
+  .sc-cover-download-button {
+    color: #f2f2f2;
+    background-color: #303030;
+  }
+
+  .sc-cover-download-button .cover-icon {
+    fill: #ffffff;
+  }
 }
 
 .sc-to-vk-button:hover .vk-icon {
+  fill: rgba(18, 18, 18, 0.4);
+}
+
+.sc-cover-download-button:hover .cover-icon {
   fill: rgba(18, 18, 18, 0.4);
 }
 
@@ -53,14 +98,26 @@
   .sc-to-vk-button:hover .vk-icon {
     fill: rgba(255, 255, 255, 0.4);
   }
+
+  .sc-cover-download-button:hover .cover-icon {
+    fill: rgba(255, 255, 255, 0.4);
+  }
 }
 
 .sc-to-vk-button:active .vk-icon {
   fill: rgba(18, 18, 18, 0.6);
 }
 
+.sc-cover-download-button:active .cover-icon {
+  fill: rgba(18, 18, 18, 0.6);
+}
+
 @media (prefers-color-scheme: dark) {
   .sc-to-vk-button:active .vk-icon {
+    fill: rgba(255, 255, 255, 0.6);
+  }
+
+  .sc-cover-download-button:active .cover-icon {
     fill: rgba(255, 255, 255, 0.6);
   }
 }
@@ -72,6 +129,15 @@
 }
 
 .sc-to-vk-button.loading .vk-icon {
+  opacity: 0;
+}
+
+.sc-cover-download-button.loading {
+  pointer-events: none;
+  opacity: 0.7;
+}
+
+.sc-cover-download-button.loading .cover-icon {
   opacity: 0;
 }
 
@@ -91,6 +157,26 @@
 }
 
 .sc-to-vk-button.loading::after {
+  opacity: 1;
+  animation: spin 1s linear infinite;
+}
+
+.sc-cover-download-button::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 14px;
+  height: 14px;
+  border: 2px solid rgba(128, 128, 128, 0.3);
+  border-top-color: currentColor;
+  border-radius: 50%;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+}
+
+.sc-cover-download-button.loading::after {
   opacity: 1;
   animation: spin 1s linear infinite;
 }
